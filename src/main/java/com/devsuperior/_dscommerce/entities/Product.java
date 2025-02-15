@@ -3,6 +3,7 @@ package com.devsuperior._dscommerce.entities;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -18,13 +19,16 @@ public class Product {
     private Double price;
     private String imgUrl;
 
-
     //Usa-se SET em relações nxn para mapear pelo JPA
     @ManyToMany
     @JoinTable(name = "tb_product_category",
             joinColumns = @JoinColumn(name = "product_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id"))
     private Set<Category> categories = new HashSet<>();
+
+    //Repare: id (OrderItemPK) >> product (Atributo da OrderItemPK)
+    @OneToMany(mappedBy = "id.product")
+    private Set<OrderItem> items = new HashSet<>();
 
     public Product(){}
 
@@ -79,4 +83,13 @@ public class Product {
     public Set<Category> getCategories() {
         return categories;
     }
+
+    public Set<OrderItem> getItems() {
+        return items;
+    }
+
+    public List<Order> getOrders(){
+        return items.stream().map(o -> o.getOrder()).toList();
+    }
+
 }
